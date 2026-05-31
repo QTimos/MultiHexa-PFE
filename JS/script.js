@@ -5,11 +5,15 @@
 var scene = new THREE.Scene();
 
 var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-var renderer = new THREE.WebGLRenderer();
-renderer.setClearColor(0x01010f, 1.0);
+var renderer = new THREE.WebGLRenderer({
+    alpha: true
+});
+renderer.setClearColor(0x000000, 0);
+// var renderer = new THREE.WebGLRenderer();
+// renderer.setClearColor(0x01010f, 1.0);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
-document.body.appendChild(renderer.domElement);
+// document.body.appendChild(renderer.domElement);
 var axes = new THREE.AxesHelper(500);
 scene.add(axes);
 var viewingFPS = false;
@@ -36,10 +40,12 @@ var fps = new THREE.FirstPersonControls(camera, renderer.domElement);
 
 
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
-camera.position.x = 120;
-camera.position.y = 1030;
-camera.position.z = 90;
-camera.lookAt(50, 980, 0);
+camera.position.set(400, 300, 800);
+camera.lookAt(500, 0, 0);
+// camera.position.x = 120;
+// camera.position.y = 1030;
+// camera.position.z = 90;
+// camera.lookAt(50, 980, 0);
 var person = new THREE.PointerLockControls(camera, renderer.domElement);
 
 var clock = new THREE.Clock();
@@ -57,16 +63,16 @@ var welcome;
 document.body.onload = function () {
     var mtlLoader2 = new THREE.MTLLoader();
     // mtlLoader2.setResourcePath('./dd/welcome2');
-    mtlLoader2.load('./dd/welcome3.mtl', function (materials) {
+    mtlLoader2.load('./dd/Donut1.mtl', function (materials) {
         materials.preload();
 
         var objLoader = new THREE.OBJLoader();
         objLoader.setMaterials(materials);
 
-        objLoader.load('./dd/welcome3.obj', function (welcome) {
+        objLoader.load('./dd/Donut1.obj', function (welcome) {
             welcome.castShadow = true;
-            welcome.position.set(0, 980, 0);
-            welcome.scale.set(20, 20, 20);
+            welcome.position.set(500, 0, 0);
+            welcome.scale.set(500, 500, 500);
             welcome.name = 'welcomeObj';
             scene.add(welcome);
 

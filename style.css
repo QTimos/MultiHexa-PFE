@@ -68,22 +68,30 @@ button, [type="button"], [type="submit"] {
 body {
 	margin: 0;
 	overflow: hidden;
+	background-color: transparent;
 }
 
-.canvas {
-	display: flex;
-	flex-direction: column;
-	background-color: black;
-	height: 40px;
+/* .canvas { */
+/* 	display: flex; */
+/* 	flex-direction: column; */
+/* 	background-color: transparent; */
+/* 	height: 40px; */
+/* } */
+
+#WebGL-output {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
 }
 
 .header {
-	position: absolute;
-	display: flex;
-	background-color: black;
-	justify-content: center;
-	padding-left: 80px;
-	gap: 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    display: flex;
+    padding-left: 80px;
+    gap: 15px;
 }
 
 .header button {
@@ -96,8 +104,8 @@ body {
 	display: inline-block;
 	font-weight: 600;
 	font-size: 15px;
-	padding: 0 18px;
-	line-height: 50px;
+	padding: 12px 18px;
+	line-height: 40px;
 	text-align: center;
 	text-decoration: none;
 	user-select: none;
