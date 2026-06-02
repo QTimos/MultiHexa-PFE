@@ -1,6 +1,7 @@
 # Blender 4.5.3 LTS MTL File: 'Donut1.blend'
 # www.blender.org
-# newmtl DonutMaterial
+
+newmtl DonutMaterial
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.910000 0.540000 0.310000

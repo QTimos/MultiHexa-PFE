@@ -3,110 +3,66 @@
 
 
 var scene = new THREE.Scene();
-
 var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 var renderer = new THREE.WebGLRenderer({
     alpha: true
 });
-renderer.setClearColor(0x000000, 0);
-// var renderer = new THREE.WebGLRenderer();
-// renderer.setClearColor(0x01010f, 1.0);
+renderer.setClearColor(0x0a0a1a, 1);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
-// document.body.appendChild(renderer.domElement);
 var axes = new THREE.AxesHelper(500);
 scene.add(axes);
 var viewingFPS = false;
-// var light26 = new THREE.SpotLight(0xffff80, 0.35, 0, Math.PI / 2.8, 1, 1);
-// light26.position.set(35, 42, -46);
-// light26.target.position.set(35, 0, -46);
-// var helper = new THREE.SpotLightHelper(light26);
-// scene.add(light26);
-// scene.add(light26.target);
-// scene.add(helper);
-
-
-// la meme script just on a changer la bibliotheque de controle
-
-// monsieur la diff. est :
-
-// premiere mode peut pas changer l'heut de view et il doit occupet le souris pour commancer la deplacment (apres cliquer la buttom)
-// mais la deuxieme peut changer l'heut et il deja lire la souris sans demande (ou appeler une fonction comme la premiere mode) 
-
-// je vais (return) la premiere mode pour bien clarifi
 
 var fps = new THREE.FirstPersonControls(camera, renderer.domElement);
-
-
-
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
 camera.position.set(400, 300, 800);
 camera.lookAt(500, 0, 0);
-// camera.position.x = 120;
-// camera.position.y = 1030;
-// camera.position.z = 90;
-// camera.lookAt(50, 980, 0);
 var person = new THREE.PointerLockControls(camera, renderer.domElement);
-
 var clock = new THREE.Clock();
 
-
-// buton pour capture le souris , donc le utilisateur peut control
-// c'est ca la button qui appelle notre fonction pour occuper la souris
 
 let btn1 = document.querySelector("#button1");
 let btn2 = document.querySelector("#button2");
 let btn3 = document.querySelector("#button3");
 
+var welcomeLight = new THREE.PointLight(0xfff5e0, 1.5, 3000);
+welcomeLight.position.set(500, 600, 800);
+scene.add(welcomeLight);
+
+var welcomeAmbient = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(welcomeAmbient);
+
 var home;
 var welcome;
 document.body.onload = function () {
-    var mtlLoader2 = new THREE.MTLLoader();
-    // mtlLoader2.setResourcePath('./dd/welcome2');
-    mtlLoader2.load('./dd/Donut1.mtl', function (materials) {
-        materials.preload();
-
-        var objLoader = new THREE.OBJLoader();
-        objLoader.setMaterials(materials);
-
-        objLoader.load('./dd/Donut1.obj', function (welcome) {
-            welcome.castShadow = true;
-            welcome.position.set(500, 0, 0);
-            welcome.scale.set(500, 500, 500);
-            welcome.name = 'welcomeObj';
-            scene.add(welcome);
-
-
+    var objLoader = new THREE.OBJLoader();
+    objLoader.load('./dd/Donut1.obj', function (welcome) {
+        welcome.traverse(function (child) {
+            if (child.isMesh) {
+                console.log(child.name)
+                child.material = new THREE.MeshPhongMaterial({
+                    color: 0xE8A87C,
+                    shininess: 200,
+                });
+            }
         });
-
+        welcome.position.set(0, 0, 0);
+        welcome.scale.set(500, 500, 500);
+        welcome.name = 'welcomeObj';
+        scene.add(welcome);
     });
-
-
 };
 
-/*
-
-
-*/
-
-
-//[      0                   ,       1       ]
-
 var indx = -1;
-//   4 objects daba
 let modules = ['./dd/home.glb', './dd/home8.glb', './dd/city2.glb'];
-
-// had l variable ghaib9a ytbadl
-
-
-// hada l variable li ghadi yhez l'object
 var selectedModule = modules[indx];
-
-// hadi le button li katbadel les objects
 
 btn3.addEventListener('click', () => {
 
     if (indx == -1) {
+        var welcomeObj = scene.getObjectByName('welcomeObj');
+        if (welcomeObj) scene.remove(welcomeObj);
         camera.position.x = 100;
         camera.position.y = 100;
         camera.position.z = 100;
@@ -114,18 +70,12 @@ btn3.addEventListener('click', () => {
         btn3.innerText = "Next module"
     }
 
-    // l index kayzid
     indx = indx + 1;
     if (indx == modules.length) {
         indx = 0;
     }
 
-    // donc l module kaytbadel
     selectedModule = modules[indx];
-
-
-
-
 
     scene.remove(home);
 
@@ -133,15 +83,12 @@ btn3.addEventListener('click', () => {
     var loader = new THREE.GLTFLoader();
     loader.load(selectedModule, function (gltf) {
         home = gltf.scene;
-        // home.rotation.x = Math.PI / 2;
         scene.add(home);
         addLights(home);
         console.log(indx);
         home.receiveShadow = true;
         home.castShadow = true;
     });
-
-
 });
 
 
@@ -171,17 +118,11 @@ btn1.addEventListener('click', () => {
 btn2.addEventListener('click', () => {
 
     viewingFPS = true;
-    // document.getElementsByTagName("body")[0].style.cursor = "url('http://wiki-devel.sugarlabs.org/images/e/e2/Arrow.cur'), auto";
-
-
 
 });
 
 
-// // on a define une variable sprint qui va changer par pressin (R), donc le vite de marche augmente
 var sprint = 1;
-
-//et ces sont les controles des le person 
 addEventListener('keydown', (e) => {
     keyboard[e.key] = true;
 });
@@ -204,11 +145,6 @@ function processKeyboard() {
 
 }
 
-// controls.maxDistance = 150;
-// controls.autoRotate = true;
-// controls.autoRotateSpeed = 100;
-// controls.addEventListener('change', renderer);
-
 var planeGeometry = new THREE.PlaneGeometry(200, 200, 1, 1);
 var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc });
 var plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -217,33 +153,23 @@ plane.position.x = 10;
 plane.position.y = -10;
 plane.position.z = 0;
 plane.receiveShadow = true;
-// scene.add(plane);
 
-
-
-
-// on a ajouter des lumieure sources dans notre objets
 
 
 var spotLight = new THREE.SpotLight(0xffffff);
 spotLight.position.set(0, 0, 0);
 spotLight.castShadow = true;
-// spotLight.lookAt(0, 0, 1);
 scene.add(spotLight);
 var boxHelper = new THREE.BoxHelper(spotLight, 0xff00f0);
 scene.add(boxHelper);
 
 var spotLight2 = new THREE.SpotLight(0x000055);
 spotLight2.position.set(50, 10, 0);
-// spotLight2.lookAt(0, 0, 0);
 spotLight2.castShadow = true;
-// scene.add(spotLight2);
 
-var lightA = new THREE.AmbientLight(0xffffff, .4); // soft white light
-// scene.add(lightA);
+var lightA = new THREE.AmbientLight(0xffffff, .4);
 
 
-//   first object lights
 const light1 = new THREE.SpotLight(0xffff80, 0.55, 0, Math.PI / 4, .2);
 light1.position.set(-11, 25, -85);
 light1.target.position.set(-11, 0, -85);
@@ -274,11 +200,6 @@ carlight.target.position.set(-1.5, 0, -20);
 var carlight2 = new THREE.SpotLight(0xffffff, .3, 0, Math.PI / 5, .1);
 carlight2.position.set(-7, 2, -26);
 carlight2.target.position.set(-7, 0, -20);
-
-
-
-//  second object lights
-
 
 
 
@@ -327,8 +248,6 @@ carlight22.target.position.set(42, 5, -10);
 
 
 
-
-// first object light helper
 const helper1 = new THREE.SpotLightHelper(light1);
 const helper2 = new THREE.SpotLightHelper(light2);
 const helper3 = new THREE.SpotLightHelper(light3);
@@ -384,17 +303,6 @@ function addLights(homeV) {
 
 
 
-
-        // scene.remove(helper21);
-        // scene.remove(helper22);
-        // scene.remove(helper23);
-        // scene.remove(helper24);
-        // scene.remove(helper25);
-
-
-
-
-
     }
     else if (indx == 1) {
         homeV.scale.set(10, 10, 10);
@@ -444,13 +352,6 @@ function addLights(homeV) {
         scene.add(carlight22);
         scene.add(carlight22.target);
         scene.add(cube8);
-        // scene.add(helper21);
-        // scene.add(helper22);
-        // scene.add(helper23);
-        // scene.add(helper24);
-        // scene.add(helper25);
-
-        // const helper11 = new THREE.SpotLightHelper(light11);
 
     } else if (indx == 2) {
         homeV.scale.set(8, 8, 8);
@@ -490,8 +391,6 @@ daylight1.position.set(-100, 80, 100);
 daylight1.target.position.set(0, 0, 0);
 scene.add(daylight1);
 scene.add(daylight1.target);
-// const helper9 = new THREE.SpotLightHelper(daylight1);
-// scene.add(helper9);
 
 
 const daylight2 = new THREE.SpotLight(0xffc7b3, .2, 0, Math.PI / 2.8, 1);
@@ -499,20 +398,10 @@ daylight2.position.set(100, 80, -100);
 daylight2.target.position.set(0, 0, 0);
 scene.add(daylight2);
 scene.add(daylight2.target);
-// const helper10 = new THREE.SpotLightHelper(daylight2);
-// scene.add(helper10);
 
 var daylight3 = new THREE.SpotLight(0xffffff, .15, 0, Math.PI / 2.8, .2);
 daylight3.position.set(100, 80, -100);
 daylight3.target.position.set(0, 0, 0);
-// scene.add(daylight3);
-// scene.add(daylight3.target);
-// const helper11 = new THREE.SpotLightHelper(daylight3);
-// scene.add(helper11);
-
-
-
-// chaque lumieure source on le placee sur les source des lumieure de notre objet 3d
 
 var cubeGeometry = new THREE.BoxGeometry(70, 150, 70);
 var cubeMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 });
@@ -523,7 +412,6 @@ cube.position.z = 0;
 cube.castShadow = true;
 cube.name = 'cubename';
 
-//on a ajouter cube et la define par une nom pour activer le click procissing, on va la voir apres
 
 var cube2Geometry = new THREE.BoxGeometry(72, 150, 72);
 var cube2Material = new THREE.MeshLambertMaterial({ color: 0xff0000, transparent: true, opacity: 0 });
@@ -567,45 +455,6 @@ var cube8Material = new THREE.MeshLambertMaterial({ color: 0xff0000, transparent
 var cube8 = new THREE.Mesh(cube8Geometry, cube8Material);
 cube8.position.set(-10, 25, -20);
 cube8.castShadow = true;
-
-
-//et ici on import notre objet (pour maintenet on utilise glb format, apres on va la placer par notre sketchup [obj, mtl] fichiers )
-
-// let home;
-// var loader = new THREE.GLTFLoader();
-// loader.load('./dd/home.glb', function (gltf) {
-//     home = gltf.scene;
-//     home.scale.set(100, 100, 100);
-//     scene.add(home);
-//     home.castShadow = true;
-// });
-
-
-
-
-// comme ca on importer les fichiers obj et mtl
-
-// var mtlLoader2 = new THREE.MTLLoader();
-// // mtlLoader2.setResourcePath('./obj1/e14fbb84-d413-4119-ab45-a3d93a89850f');
-// mtlLoader2.load('./obj1/CITY_1.mtl', function (materials) {
-//     materials.preload();
-
-//     var objLoader = new THREE.OBJLoader();
-//     objLoader.setMaterials(materials);
-
-//     objLoader.load('./obj1/CITY_1.obj', function (object) {
-//         object.castShadow = true;
-//         scene.add(object);
-
-
-//     });
-
-// });
-
-
-
-// ici on va utilise le cube que on la deja cree , donc quand on cliquer sur lui dans notre scene (object dans site) on exuceter quelqu chose
-// dans notre cas on ajouter une autre cube et la (remove) si il est deja existe
 
 
 const domEvent = new THREEx.DomEvents(camera, renderer.domElement);
@@ -824,9 +673,6 @@ domEvent.addEventListener(cube8, 'mouseout', event => {
 
 });
 
-
-// et c'est une fonction init pour ajouter le blaque de statue a corner (qui identifie le fps )
-
 function initStats() {
     var stats = new Stats();
     stats.setMode(0);
@@ -837,15 +683,10 @@ function initStats() {
     return stats;
 }
 
-
-// et set fonction responsable pour controler les animation (dans notre cas il n y a pas animation, just clavier controls fonction)
-
-
 var stats = initStats();
 var step = 0;
 function renderScene() {
     stats.update();
-    // l 'autre mode de control est first person mode.... je vais l'active!
     if (viewingFPS) {
         fps.update(clock.getDelta());
 
@@ -860,6 +701,3 @@ function renderScene() {
 
 renderScene();
 $("#WebGL-output").append(renderer.domElement);
-
-
-// merci monsieur
